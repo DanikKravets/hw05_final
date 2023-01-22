@@ -7,7 +7,7 @@ from django.contrib.auth import get_user_model
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import Client, TestCase, override_settings
 from django.urls import reverse
-from posts.forms import CommentForm, PostForm
+from posts.forms import PostForm
 from posts.models import Comment, Group, Post
 
 User = get_user_model()
@@ -34,7 +34,6 @@ class PostFormTests(TestCase):
             content_type='image/gif'
         )
         cls.form = PostForm()
-        cls.form2 = CommentForm()
 
         cls.user = User.objects.create_user(username='TestName')
 
@@ -206,6 +205,18 @@ class PostFormTests(TestCase):
         self.assertEqual(response.status_code, HTTPStatus.OK)
         error = 'Неавторизованный пользователь смог создать пост'
         self.assertEqual(Post.objects.count(), posts_count, error)
+
+
+class CommentFormTest(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username='TestName')
+        self.authorized_client = Client()
+        self.authorized_client.force_login(self.user)
+        self.guest_client = Client()
+        self.post = Post.objects.create(
+            text='Test text',
+            author=self.user
+        )
 
     def test_comment_rights(self):
         """Проверка прав комментирования"""

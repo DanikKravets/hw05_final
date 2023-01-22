@@ -1,7 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect, render
-from django.views.decorators.cache import cache_page
 
 from .common import paginator
 from .forms import CommentForm, PostForm
@@ -11,7 +10,6 @@ AMOUNT = 10
 User = get_user_model()
 
 
-@cache_page(20, key_prefix='index_page')
 def index(request):
 
     template = 'posts/index.html'
@@ -56,7 +54,7 @@ def profile(request, username):
             user=request.user
         ).exists()
     )
-    followers = author.follower.count()
+    followers = author.following.all().count()
     if request.user == author:
         is_not_author = False
 
@@ -181,11 +179,8 @@ def follow_index(request):
 def profile_follow(request, username):
     author = get_object_or_404(User, username=username)
 
-    if author != request.user and not Follow.objects.filter(
-        user=request.user,
-        author=author
-    ).exists():
-        Follow.objects.create(
+    if author != request.user:
+        Follow.objects.get_or_create(
             user=request.user,
             author=author,
         )

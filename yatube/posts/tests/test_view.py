@@ -423,7 +423,7 @@ class PostPagesTests(TestCase):
         self.assertEqual(response.context.get('is_not_author'), False)
         self.assertEqual(
             response.context.get('followers'),
-            self.user.follower.count(),
+            self.user.following.all().count(),
         )
 
     def test_follow_index_uses_correct_context(self):
