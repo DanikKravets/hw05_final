@@ -1,7 +1,6 @@
 <!DOCTYPE html> <!-- Используется html 5 версии -->
 <html lang="ru"> <!-- Язык сайта - русский -->
   {%extends 'base.html' %}
-  {% load cache %}
   {% load thumbnail %}
   {% block title %} {{ title }} {% endblock title %}
   {% block content %}
@@ -10,7 +9,6 @@
   <div class="container py-5">     
     <h1>{{ text }}</h1>
     <article>
-      {% cache 200 sidebar %}
       {% for post in page_obj %}
       <ul>
         <li>
@@ -33,7 +31,6 @@
       {% endfor %}
     </article>
     {% include 'posts/includes/paginator.html' %}
-    {% endcache %}
   </div>  
   {% endblock content %}
   
